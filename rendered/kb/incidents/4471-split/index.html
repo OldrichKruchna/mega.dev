@@ -33,6 +33,7 @@
   aside { border-left: 4px solid var(--accent); padding: 0.5rem 1rem; margin: 1rem 0; background: var(--note-bg); }
   aside.warn { border-color: var(--warn); background: var(--warn-bg); }
   .sum { font-size: 1.1rem; }
+  small { color: var(--muted); }
   .stamp { margin: 2rem 0 0; font: 0.85rem var(--mono); color: var(--muted); }
   .stamp b { color: var(--accent); letter-spacing: 0.04em; }
   .kb { overflow-wrap: anywhere; }
@@ -68,9 +69,9 @@
         <tr><th>problem</th><th>reports</th><th>tenants</th><th>seen</th><th>ticket</th></tr>
       </thead>
       <tbody>
-        <tr><td>parser reads dates month first</td><td>374</td><td>11</td><td>2026-04-01 → 2026-10-04</td><td><a href="https://github.com/OldrichKruchna/mega.dev/issues/1">mega.dev/issues/1</a></td></tr>
+        <tr><td>parser reads dates month first</td><td>379</td><td>11</td><td>2026-04-01 → 2026-10-04</td><td><a href="https://github.com/OldrichKruchna/mega.dev/issues/1">mega.dev/issues/1</a></td></tr>
         <tr><td>booking-v3 form hint says MM/DD/YYYY</td><td>33</td><td>3</td><td>2026-04-17 → 2026-09-22</td><td><a href="https://github.com/OldrichKruchna/mega.dev/issues/2">mega.dev/issues/2</a></td></tr>
-        <tr><td>date moves by one day</td><td>5</td><td>5</td><td>2026-04-02 → 2026-10-04</td><td><a href="https://github.com/OldrichKruchna/mega.dev/issues/3">mega.dev/issues/3</a></td></tr>
+        <tr><td>date moves by one day<br><small>also counted under parser</small></td><td>5</td><td>5</td><td>2026-04-02 → 2026-10-04</td><td><a href="https://github.com/OldrichKruchna/mega.dev/issues/3">mega.dev/issues/3</a></td></tr>
       </tbody>
     </table>
     </div>
@@ -88,7 +89,8 @@
 
     <p><strong>The date moves by one day.</strong> “Tuesday showed as Monday.” “Client in Lisbon got Tuesday,
     client in Toronto got Monday.” A day/month swap cannot do that. The desk already lists these in
-    <code>desk-notes.json</code> as read as a one-day move; they look like a time zone conversion bug.</p>
+    <code>desk-notes.json</code> as read as a one-day move; they look like a time zone conversion bug. They
+    stay counted under the parser too, where the desk filed them.</p>
 
     <h2>How to tell them apart</h2>
     <ul>

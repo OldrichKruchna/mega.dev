@@ -42,7 +42,8 @@ parser does not fix it: the hint (or how the form reads its input) has to change
 
 **The date moves by one day.** "Tuesday showed as Monday." "Client in Lisbon got Tuesday,
 client in Toronto got Monday." A day/month swap cannot do that. The desk already lists these in
-`desk-notes.json` as read as a one-day move; they look like a time zone conversion bug.
+`desk-notes.json` as read as a one-day move; they look like a time zone conversion bug. They
+stay counted under the parser too, where the desk filed them.
 
 ## How to tell them apart
 

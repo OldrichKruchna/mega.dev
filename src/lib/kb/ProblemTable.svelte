@@ -1,15 +1,14 @@
 <script lang="ts">
   import reports from '#lib/data/reports-4471.json';
   import notes from '#lib/data/desk-notes.json';
-  import { causeOf, uniqueById, type Report } from '#lib/kb/causes';
+  import { groupByCause, readAs, uniqueById, type Report } from '#lib/kb/causes';
   import { tenantOf } from '#lib/kb/locales';
 
-  // The problems inside a merged ticket: the desk's causes, with the one-day moves split out,
-  // because a day/month swap cannot move a date by one day.
+  // The problems inside a merged ticket, counted the desk's way (as CauseTable does): every report
+  // under its cause. The one-day moves get their own row too, but stay counted where they're filed.
   let { ticket, links = {} }: { ticket: number; links?: Record<string, string> } = $props();
 
-  type Problem = 'parser' | 'hint' | 'one-day' | 'unplaced';
-  const LABEL: Record<Problem, string> = {
+  const LABEL: Record<string, string> = {
     parser: 'parser reads dates month first',
     hint: 'booking-v3 form hint says MM/DD/YYYY',
     'one-day': 'date moves by one day',
@@ -17,17 +16,21 @@
   };
 
   const merged = $derived(uniqueById(reports as Report[]).filter((r) => r.mergedInto === ticket));
-  const problemOf = (r: Report): Problem =>
-    notes.oneDayMove.includes(r.id) ? 'one-day' : (causeOf(r, tenantOf(r)) ?? 'unplaced');
+  const groups = $derived(groupByCause(merged, tenantOf));
+  const oneDay = $derived(merged.filter((r) => notes.oneDayMove.includes(r.id)));
   const rows = $derived.by(() => {
-    const by = new Map<Problem, Report[]>();
-    for (const r of merged) by.set(problemOf(r), [...(by.get(problemOf(r)) ?? []), r]);
-    return [...by.entries()]
-      .map(([problem, rs]) => {
-        const days = rs.map((r) => r.receivedAt.slice(0, 10)).sort();
-        return { problem, n: rs.length, tenants: new Set(rs.map((r) => r.tenant)).size, first: days[0], last: days[days.length - 1] };
-      })
-      .sort((a, b) => b.n - a.n);
+    const days = oneDay.map((r) => r.receivedAt.slice(0, 10)).sort();
+    return [
+      ...groups.map((g) => ({ problem: g.cause, n: g.reports.length, tenants: g.tenants, first: g.firstSeen, last: g.lastSeen, also: '' })),
+      {
+        problem: 'one-day',
+        n: oneDay.length,
+        tenants: new Set(oneDay.map((r) => r.tenant)).size,
+        first: days[0],
+        last: days[days.length - 1],
+        also: groups.filter((g) => readAs(g, notes.oneDayMove)).map((g) => `also counted under ${g.cause}`).join(', '),
+      },
+    ];
   });
 </script>
 
@@ -42,7 +45,7 @@
   <tbody>
     {#each rows as row (row.problem)}
       <tr>
-        <td>{LABEL[row.problem]}</td>
+        <td>{LABEL[row.problem]}{#if row.also}<br /><small>{row.also}</small>{/if}</td>
         <td>{row.n}</td>
         <td>{row.tenants}</td>
         <td>{row.first} → {row.last}</td>
@@ -54,4 +57,5 @@
 
 <style>
   .sum { font-size: 1.1rem; }
+  small { color: var(--muted); }
 </style>
