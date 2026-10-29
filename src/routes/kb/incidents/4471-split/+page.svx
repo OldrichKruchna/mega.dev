@@ -4,7 +4,7 @@ title: '#4471 is three problems, not one'
 owner: Mega Olda
 status: open
 reviewed: 2026-10-29
-signature: Mega Olda
+signature: v1.eyJzdWIiOiIzNDMyIiwiYXVkIjoiY2hhbGxlbmdlOndoYXQtaXQtc2hvd3MiLCJpYXQiOjE3OTMyNjQxMDUsImV4cCI6MTc5MzM1MDUwNX0.DnNqrInCY0F0mQfVgYChlSHDzezEoGs8uEUbmV25_K4
 ---
 
 <script>
