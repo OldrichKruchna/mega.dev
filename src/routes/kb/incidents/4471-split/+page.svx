@@ -1,0 +1,60 @@
+---
+layout: runbook
+title: '#4471 is three problems, not one'
+owner: Mega Olda
+status: open
+reviewed: 2026-10-29
+signature: Mega Olda
+---
+
+<script>
+  import ProblemTable from '#lib/kb/ProblemTable.svelte';
+  import Callout from '#lib/kb/Callout.svelte';
+  import RenderStamp from '#lib/kb/RenderStamp.svelte';
+
+  const repo = 'https://github.com/OldrichKruchna/mega.dev/issues';
+  const links = { parser: `${repo}/1`, hint: `${repo}/2`, 'one-day': `${repo}/3` };
+</script>
+
+[#4471](/kb/incidents/4471) is marked known: one bug, one fix queued. The reports in it say
+otherwise. They were merged on subject line ([decision 0001](/kb/decisions/0001-dedupe-by-subject)),
+and "wrong date" is the subject of more than one bug.
+
+<Callout kind="warn">
+The queued parser fix will not close #4471. Two of these problems have no ticket of their own
+until now, and they will keep coming in after the fix ships.
+</Callout>
+
+## What is in #4471
+
+<ProblemTable ticket={4471} {links} />
+
+## The three problems
+
+**The parser reads dates month first.** Every tenant on file writes the day first, so their
+dates come out with day and month swapped: 7 April becomes 4 July. This is the bug #4471
+names, and most of the reports.
+
+**The booking-v3 form hint says `MM/DD/YYYY`.** The form reads the date the tenant's way, day
+first, but tells people to type the month first. They do what the hint says, and the booking
+lands swapped. It only comes through the form, only for tenants on booking-v3. Fixing the
+parser does not fix it: the hint (or how the form reads its input) has to change.
+
+**The date moves by one day.** "Tuesday showed as Monday." "Client in Lisbon got Tuesday,
+client in Toronto got Monday." A day/month swap cannot do that. The desk already lists these in
+`desk-notes.json` as read as a one-day move; they look like a time zone conversion bug.
+
+## How to tell them apart
+
+- Day and month swapped, report from the app or email: parser.
+- Day and month swapped, report from the form of a booking-v3 tenant: form hint.
+- Same month, one day off, or different days in different places: one-day move.
+- The reporter's browser locale (intake's tag) does not tell you the cause. The tenant does.
+
+## Lessons
+
+- Matching on subject is fast, but "the date is wrong" is a symptom, not a cause. Before a
+  ticket is marked known, read a sample of what was merged into it.
+- The export pages overlap: count reports by id, once.
+
+<RenderStamp {signature} />
